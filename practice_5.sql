@@ -1,3 +1,4 @@
+--BÀI TẬP TRÊN WEB
 --EX1:
 SELECT
 CONTINENT,
@@ -102,3 +103,103 @@ FROM pages A
 LEFT JOIN page_likes B ON A.page_id = B.page_id
 WHERE B.page_id IS NULL
 ORDER BY A.page_id
+
+--MID-COURSE TEST
+--CÂU 1:
+SELECT
+	DISTINCT REPLACEMENT_COST
+FROM FILM
+ORDER BY REPLACEMENT_COST
+LIMIT 1
+
+--CÂU 2:
+SELECT
+COUNT(FILM_ID)
+FROM FILM
+WHERE REPLACEMENT_COST BETWEEN 9.99 AND 19.99
+GROUP BY 
+(CASE
+	WHEN REPLACEMENT_COST BETWEEN 9.99 AND 19.99 THEN 'LOW'
+	WHEN REPLACEMENT_COST BETWEEN 20.00 AND 24.99 THEN 'MEDIUM'
+	WHEN REPLACEMENT_COST BETWEEN 25.00 AND 29.99 THEN 'HIGH'
+END)
+
+--CÂU 3:
+SELECT
+	MAX(A.length),
+	C.name
+FROM FILM A 
+JOIN public.film_category B ON A.film_id = B.film_id
+JOIN CATEGORY C ON B.category_id = C.category_id
+WHERE C.name IN ('Drama','Sports')
+GROUP BY C.name
+ORDER BY MAX(A.LENGTH) DESC
+LIMIT 1
+
+--CÂU 4:
+SELECT
+	C.name,
+	COUNT(A.film_id)
+FROM FILM A 
+JOIN public.film_category B ON A.film_id = B.film_id
+JOIN CATEGORY C ON B.category_id = C.category_id
+GROUP BY C.name
+ORDER BY COUNT(A.film_id) DESC
+LIMIT 1
+
+--CÂU 5:
+SELECT
+	first_name || ' ' || last_name AS ACTOR_NAME,
+	COUNT(film_id) AS TOTAL_FILM
+FROM public.film_actor A
+JOIN public.actor B ON A.actor_id = B.actor_id
+GROUP BY first_name || ' ' || last_name
+ORDER BY TOTAL_FILM DESC
+LIMIT 1
+
+--CÂU 6:
+SELECT
+COUNT(*) AS TOTAL_ADDRESS
+FROM public.address A
+LEFT JOIN public.customer B ON A.address_id = B.address_id
+WHERE customer_id IS NULL
+
+--CÂU 7:
+SELECT
+	D.city,
+	SUM(amount) AS TOTAL_AMOUNT
+FROM PAYMENT A
+JOIN public.customer B ON A.customer_id = B.customer_id
+JOIN public.address C ON B.address_id = C.address_id
+JOIN public.city D ON C.city_id = D.city_id
+GROUP BY D.city
+ORDER BY TOTAL_AMOUNT DESC
+LIMIT 1
+
+--CÂU 8:
+SELECT
+	city || ',' || ' ' || country AS CITY_COUNTRY,
+	SUM(amount) AS TOTAL_AMOUNT
+FROM PAYMENT A
+JOIN public.customer B ON A.customer_id = B.customer_id
+JOIN public.address C ON B.address_id = C.address_id
+JOIN public.city D ON C.city_id = D.city_id
+JOIN public.country E ON D.country_id = E.country_id
+GROUP BY city || ',' || ' ' || country
+ORDER BY TOTAL_AMOUNT DESC 
+LIMIT 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

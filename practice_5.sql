@@ -75,7 +75,15 @@ GROUP BY customer_id
 HAVING COUNT(DISTINCT product_category) = (SELECT COUNT(DISTINCT product_category) FROM products)
 
 --EX5:
-
+SELECT
+    B.reports_to AS employee_id ,
+    A.name,
+    COUNT(B.employee_id) AS reports_count,
+    ROUND(AVG(B.age),0) AS average_age
+FROM Employees A
+JOIN Employees B ON A.employee_id = B.reports_to
+GROUP BY B.reports_to, A.name
+ORDER BY employee_id
 
 --EX6:
 

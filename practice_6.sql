@@ -12,7 +12,51 @@ HAVING COUNT(job_id) > 1
 ) COUNT_JOB
 
 --EX2:
+WITH CTE_REVENUE AS
+(
+SELECT
+category, product,
+SUM(spend) total_spend
+FROM product_spend
+WHERE EXTRACT(YEAR FROM transaction_date) = 2022
+GROUP BY category, product
+),
 
+--TÌM TOP 1
+CTE_MAX1 AS
+(
+SELECT
+category,
+MAX(total_spend) max_spend
+FROM CTE_REVENUE
+GROUP BY category
+),
+--TÌM TOP 2
+CTE_MAX2 AS
+(
+SELECT
+category,
+MAX(total_spend) max_spend
+FROM CTE_REVENUE
+WHERE total_spend NOT IN (SELECT max_spend FROM CTE_MAX1 WHERE CTE_MAX1.category = CTE_REVENUE.category)
+GROUP BY category
+),
+--UNION CTE_MAX1 VÀ CTE_MAX2
+CTE_MERGE AS
+(
+SELECT*FROM CTE_MAX1
+UNION
+SELECT*FROM CTE_MAX2 
+)
+
+SELECT
+A.category,
+product,
+max_spend
+FROM CTE_MERGE A
+JOIN CTE_REVENUE B ON A.category = B.category
+WHERE total_spend = max_spend
+    
 --EX3:
 SELECT
 COUNT(*)
@@ -35,7 +79,17 @@ WHERE B.page_id IS NULL
 ORDER BY A.page_id
 
 --EX5:
-
+SELECT
+DISTINCT EXTRACT(MONTH FROM event_date) AS month,
+COUNT(DISTINCT user_id) AS monthly_active_users
+FROM user_actions
+WHERE EXTRACT(MONTH FROM event_date) = 7
+AND user_id IN
+(
+  SELECT user_id FROM user_actions WHERE EXTRACT(MONTH FROM event_date) = 6
+)
+GROUP BY DISTINCT EXTRACT(MONTH FROM event_date)
+    
 --EX6:
 SELECT
 DATE_FORMAT(trans_date, '%Y-%m') AS month,

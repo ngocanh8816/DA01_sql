@@ -126,23 +126,13 @@ WITH CTE_A AS
 (
 SELECT
 artist_name,
-COUNT(rank) OVER (PARTITION BY artist_name) AS COUNT_APPEARANCE
-FROM artists A 
+DENSE_RANK() OVER (ORDER BY COUNT(B.song_id) DESC) AS artist_rank
+FROM artists A
 JOIN songs AS B ON A.artist_id = B.artist_id
 JOIN global_song_rank C ON B.song_id = C.song_id
-),
-CTE_B AS
-(
-SELECT *,
-DENSE_RANK() OVER (ORDER BY count_appearance DESC) AS artist_rank
-FROM CTE_A
-),
-CTE_C AS
-(
-SELECT artist_name, artist_rank
-FROM CTE_B
-WHERE artist_rank <= 5
-ORDER BY artist_name
+WHERE C.rank <= 10
+GROUP BY A.artist_name
 )
-SELECT DISTINCT(artist_name, artist_rank)
-FROM CTE_C
+SELECT *
+FROM CTE_A
+WHERE artist_rank <= 5

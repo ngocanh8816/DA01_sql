@@ -110,10 +110,35 @@ AND tiv_2015 IN
 (SELECT tiv_2015 FROM Insurance GROUP BY tiv_2015 HAVING COUNT(pid) > 1)
 
 --EX6:
+WITH CTE_A AS
+(
+SELECT
+name, salary, departmentId,
+DENSE_RANK() OVER (PARTITION BY departmentId ORDER BY salary DESC) AS rank_col
+FROM Employee
+)
 
+SELECT
+B.name AS Department,
+CTE_A.name AS Employee,
+salary
+FROM CTE_A
+JOIN Department B ON CTE_A.departmentId = B.id
+WHERE rank_col <= 3
 
 --EX7:
-
+SELECT
+person_name
+FROM
+(
+SELECT
+person_name, weight, turn,
+SUM(weight) OVER (ORDER BY turn) AS total_weight
+FROM Queue
+) AS CTE_A
+WHERE total_weight <= 1000
+ORDER BY turn DESC
+LIMIT 1
 
 --EX8:
 

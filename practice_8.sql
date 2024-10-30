@@ -78,10 +78,36 @@ END AS student
 FROM Seat
 
 --EX4:
-
+WITH CTE_A AS
+(
+SELECT visited_on, SUM(amount) as amount
+FROM Customer
+GROUP BY visited_on
+)
+SELECT * FROM
+(
+SELECT
+visited_on,
+CASE
+WHEN visited_on IN (SELECT DATE_ADD(visited_on, INTERVAL 6 DAY) FROM Customer) THEN
+SUM(amount) OVER (ORDER BY visited_on ROWS BETWEEN 6 PRECEDING AND CURRENT ROW)
+END AS amount,
+CASE
+WHEN visited_on IN (SELECT DATE_ADD(visited_on, INTERVAL 6 DAY) FROM Customer) THEN
+ROUND(AVG(amount) OVER (ORDER BY visited_on ROWS BETWEEN 6 PRECEDING AND CURRENT ROW),2)
+END AS average_amount
+FROM CTE_A
+) AS A
+WHERE amount IS NOT NULL
 
 --EX5:
-
+SELECT
+ROUND(SUM(tiv_2016),2) AS tiv_2016
+FROM Insurance
+WHERE (lat, lon) IN
+(SELECT lat, lon FROM Insurance GROUP BY lat, lon HAVING COUNT(pid) = 1)
+AND tiv_2015 IN
+(SELECT tiv_2015 FROM Insurance GROUP BY tiv_2015 HAVING COUNT(pid) > 1)
 
 --EX6:
 

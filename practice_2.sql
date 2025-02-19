@@ -1,11 +1,11 @@
---EX1:
+--EX1: https://www.hackerrank.com/challenges/weather-observation-station-3/problem?isFullScreen=true
 SELECT
     DISTINCT CITY
 FROM station
 WHERE ID % 2 =0
 ORDER BY CITY
 
---EX2:
+--EX2: https://www.hackerrank.com/challenges/weather-observation-station-4/problem?isFullScreen=true
 SELECT
     COUNT(*) - COUNT(DISTINCT CITY) AS 'DIFFERENCE'
 FROM STATION
